@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../component/Navbar";
 import rightArrow from "../assets/arrow-right.svg";
 import { MimicMetrics } from "../utils/api-mimic";
-import Dropdown from "../component/Dropdown";
 import LineAreaChart from "../component/LineAreaChart";
-import ChartComponent from "../component/LineAreaChart";
 
 const Metrics = () => {
   const [metricsData, setMetricsData] = useState([]);
@@ -24,7 +21,7 @@ const Metrics = () => {
     };
 
     fetchData();
-  }, []); // Run only once on component mount
+  }, []);
   return (
     <>
       {/* Main Card */}
@@ -54,7 +51,7 @@ const Metrics = () => {
 
                 <div className="p-4">
                   {/* Chart */}
-                  {metricsData[0] && <LineAreaChart data={metricsData[0]} />}
+                  {metricsData?.[0] && <LineAreaChart data={metricsData[0]} />}
                 </div>
               </div>
             </div>
