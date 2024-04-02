@@ -20,9 +20,14 @@ const Logs = () => {
         const limit = 100; // number of logs to fetch
 
         // Fetch the logs based on the current mode
-        const logsData = liveMode
-          ? []
-          : await MimicLogs.fetchPreviousLogs({ startTs, endTs, limit });
+        let logsData = [];
+        if (!liveMode) {
+          logsData = await MimicLogs.fetchPreviousLogs({
+            startTs,
+            endTs,
+            limit,
+          });
+        }
 
         // Set the fetched logs in state
         setLogs(logsData);
@@ -75,7 +80,7 @@ const Logs = () => {
         <div className="flex items-center justify-center bg-[#0E1623]">
           <svg
             aria-hidden="true"
-            className="w-4 h-4 text-gray-200 animate-spin  fill-indigo-600"
+            className="w-4 h-4 text-gray-200 animate-spin fill-indigo-600"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
