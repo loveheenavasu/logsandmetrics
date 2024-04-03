@@ -8,7 +8,10 @@ import { useState } from "react";
 
 function App() {
   const [selectedValue, setSelectedValue] = useState(null);
-  const [datePicker, setDatePicker] = useState([new Date(), new Date()]);
+  const [datePicker, setDatePicker] = useState([
+    new Date(Date.now() - 2 * 60 * 1000),
+    new Date(),
+  ]);
 
   return (
     <div className="App">

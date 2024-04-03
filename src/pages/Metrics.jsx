@@ -23,14 +23,23 @@ const Metrics = ({
     const to = toValue === "now" ? Date.now() : toValue;
 
     const fetchData = async () => {
-      try {
+      if (!from && !to) {
         const data = await MimicMetrics.fetchMetrics({
-          startTs: from,
-          endTs: to,
+          startTs: new Date() - 2 * 60 * 1000,
+          endTs: new Date(),
         });
+
         setMetricsData(data);
-      } catch (error) {
-        console.error("Error fetching metrics:", error);
+      } else {
+        try {
+          const data = await MimicMetrics.fetchMetrics({
+            startTs: from,
+            endTs: to,
+          });
+          setMetricsData(data);
+        } catch (error) {
+          console.error("Error fetching metrics:", error);
+        }
       }
     };
 

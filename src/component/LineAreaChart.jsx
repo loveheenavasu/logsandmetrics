@@ -1,6 +1,7 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
-
+import "chartjs-adapter-date-fns";
+import { enUS } from "date-fns/locale";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,10 +34,7 @@ const LineAreaChart = ({ data }) => {
     return {
       label: line.name,
       data: line.values.map((value) => ({
-        x: new Date(value.timestamp).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        x: new Date(value.timestamp),
         y: value.value,
       })),
 
@@ -47,13 +45,25 @@ const LineAreaChart = ({ data }) => {
       borderWidth: 2,
     };
   });
-  console.log("🚀 ~ datasets ~ datasets:", datasets);
 
   const options = {
     responsive: true,
 
     scales: {
       x: {
+        type: "time",
+        adapters: {
+          date: {
+            locale: enUS,
+          },
+        },
+        time: {
+          unit: "minute",
+          displayFormats: {
+            minute: "HH:mm",
+          },
+          tooltipFormat: "MMM dd, yyyy HH:mm",
+        },
         ticks: {
           color: "#6F8EBD",
           font: {
@@ -63,7 +73,6 @@ const LineAreaChart = ({ data }) => {
       },
       y: {
         position: "right",
-
         grace: "20%",
         ticks: {
           color: "#6F8EBD",
