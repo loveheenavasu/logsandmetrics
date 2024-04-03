@@ -36,8 +36,8 @@ const LineFilledChart = ({ data }) => {
       .createElement("canvas")
       .getContext("2d")
       .createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, `${colors[index % colors.length]}20`); // Start color with transparency
-    gradient.addColorStop(1, `${colors[index % colors.length]}00`); // End color with transparency
+    gradient.addColorStop(0, `${colors[index % colors.length]}20`);
+    gradient.addColorStop(1, `${colors[index % colors.length]}00`);
 
     return {
       label: line.name,
@@ -47,9 +47,11 @@ const LineFilledChart = ({ data }) => {
       })),
       backgroundColor: gradient,
       borderColor: colors[index % colors.length],
+      pointBackgroundColor: colors[index % colors.length],
       tension: 0.2,
       pointStyle: false,
       borderWidth: 2,
+      pointRadius: 0,
       fill: "start", // Gradient fill starting from bottom
     };
   });

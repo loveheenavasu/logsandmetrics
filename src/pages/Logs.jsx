@@ -6,7 +6,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 const Logs = () => {
   const [logs, setLogs] = useState([]);
-  console.log("🚀 ~ Logs ~ logs:", logs);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [liveMode, setLiveMode] = useState(true);
@@ -86,7 +86,7 @@ const Logs = () => {
   };
 
   const objDiv = document.getElementById("scrollableDiv");
-  console.log(liveMode, atBottom, objDiv, "9034903940");
+
   useEffect(() => {
     if (objDiv && liveMode && atBottom) {
       objDiv.scrollTop = objDiv.scrollHeight;

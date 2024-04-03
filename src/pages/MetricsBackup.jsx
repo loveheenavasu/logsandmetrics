@@ -7,7 +7,6 @@ import DateRangePicker from "../component/DateRangePicker";
 
 const Metrics = () => {
   const [metricsData, setMetricsData] = useState([]);
-  console.log("🚀 ~ Metrics ~ metricsData:", metricsData);
 
   useEffect(() => {
     const fetchData = async () => {

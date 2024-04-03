@@ -6,6 +6,12 @@ import "react-clock/dist/Clock.css";
 import { useSearchParams } from "react-router-dom";
 import rightArrow from "../assets/arrow-right.svg";
 
+export function convertToTimestamp(isoTimestamp) {
+  if (!isoTimestamp) return null;
+  const date = new Date(isoTimestamp);
+  return date.getTime();
+}
+
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
   const options = {
@@ -21,12 +27,6 @@ const formatDate = (timestamp) => {
   });
   return `${formattedDate} ${formattedTime}`;
 };
-
-function convertToTimestamp(isoTimestamp) {
-  if (!isoTimestamp) return null;
-  const date = new Date(isoTimestamp);
-  return date.getTime();
-}
 
 function convertTimestamp(originalTimestamp) {
   const timestamp1 = convertToISODate(originalTimestamp);
@@ -78,7 +78,7 @@ function DateRangePicker({ datePicker, setDatePicker }) {
     };
     setSearchParams(params);
     setDatePicker(newValue);
-    setShowPicker(false);
+    // setShowPicker(false);
   };
 
   const handleDataClick = () => {
