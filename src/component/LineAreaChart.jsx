@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
 import { enUS } from "date-fns/locale";
@@ -13,6 +13,9 @@ import {
   Legend,
   TimeScale,
 } from "chart.js";
+import { convertToTimestamp } from "./DateRangePicker";
+import { Link } from "react-router-dom";
+import { fill } from "lodash";
 
 ChartJS.register(
   CategoryScale,
@@ -24,32 +27,92 @@ ChartJS.register(
   Legend,
   TimeScale
 );
+const colors = ["#DC2626", "#2563EB", "#059669"];
 
 const LineAreaChart = ({ data }) => {
-  const colors = ["#DC2626", "#2563EB", "#059669"];
+  const [selectedPoints, setSelectedPoints] = useState({});
   // Parse the API data into datasets for Chart.js
   const reversedGraphLines = data.graphLines.slice().reverse();
 
+  const getTimeStamps = () => {
+    let start;
+    let end;
+    Object.entries(selectedPoints).forEach(([key, value]) => {
+      if (value.length === 2) {
+        const dataset = datasets[key];
+        const min = Math.min(...value);
+        const max = Math.max(...value);
+
+        start = dataset.data[min]?.x;
+
+        end = dataset.data[max]?.y;
+      }
+    });
+
+    start = convertToTimestamp(start);
+    end = convertToTimestamp(start);
+
+    return start & end ? { start, end } : undefined;
+  };
+
   const datasets = reversedGraphLines.map((line, index) => {
+    const array = Array.from({ length: line.values.length });
+
     return {
       label: line.name,
       data: line.values.map((value) => ({
         x: new Date(value.timestamp),
         y: value.value,
       })),
+      fill: true,
+      backgroundColor: function (context) {
+        const points = selectedPoints[index];
+        if (points?.length === 2) {
+          const start = Math.min(...points);
+          const end = Math.max(...points);
 
-      backgroundColor: colors[index % colors.length],
+          if (context.dataIndex >= start && context.dataIndex <= end) {
+            return "red";
+          }
+        }
+        return "transparent";
+      },
       borderColor: colors[index % colors.length],
-      tension: 0.1,
-      pointStyle: false,
-      pointRadius: 0,
+      pointBackgroundColor: colors[index % colors.length],
+      tension: 0.02,
+      pointStyle: array.map((a, i) => {
+        if (selectedPoints[index]?.[i]) {
+          return "circle";
+        }
+        return false;
+      }),
       borderWidth: 2,
+      pointRadius: array.map((a, i) => {
+        if (selectedPoints[index]?.includes?.(i)) {
+          return 2;
+        }
+        return 0;
+      }),
     };
   });
 
   const options = {
     responsive: true,
-
+    onClick: function (evt, element) {
+      if (element.length > 0) {
+        const points = {};
+        const index = element[0].index;
+        const dataSetIndex = element[0].datasetIndex;
+        points[dataSetIndex] = new Set(selectedPoints[dataSetIndex] || []);
+        if (points[dataSetIndex].size === 2) {
+          points[dataSetIndex] = new Set();
+        }
+        points[dataSetIndex].add(index);
+        points[dataSetIndex] = Array.from(points[dataSetIndex]);
+        setSelectedPoints(points);
+        getTimeStamps();
+      }
+    },
     scales: {
       x: {
         type: "time",
@@ -99,9 +162,25 @@ const LineAreaChart = ({ data }) => {
     },
   };
 
+  const timeStamps = getTimeStamps();
+  console.log("🚀 ~ LineAreaChart ~ timeStamps:", timeStamps);
+
   return (
     <>
-      <Line data={{ datasets }} options={options} />
+      <div className="relative">
+        <Line data={{ datasets }} options={options} />
+        {timeStamps && (
+          <Link
+            className="absolute bottom-[4px] right-[20px]"
+            to={`/logs?from=${timeStamps?.start}&to=${timeStamps?.end}`}
+          >
+            <div className="bg-[#010202] w-[90px] text-white flex justify-center rounded-md">
+              {" "}
+              View Logs
+            </div>
+          </Link>
+        )}
+      </div>
     </>
   );
 };

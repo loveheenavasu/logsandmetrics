@@ -15,7 +15,6 @@ const Metrics = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [metricsData, setMetricsData] = useState([]);
-  console.log("🚀 ~ Metrics ~ metricsData:", metricsData);
 
   useEffect(() => {
     const from = searchParams.get("from");

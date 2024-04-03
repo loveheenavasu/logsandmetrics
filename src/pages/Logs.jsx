@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Log from "../component/Log";
-import rightArrow from "../assets/arrow-right.svg";
 import { MimicLogs } from "../utils/api-mimic";
-import InfiniteScroll from "react-infinite-scroll-component";
+
 import DateRangePicker, {
   convertToTimestamp,
 } from "../component/DateRangePicker";
