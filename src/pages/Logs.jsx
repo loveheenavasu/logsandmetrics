@@ -11,71 +11,109 @@ const Logs = () => {
   const [error, setError] = useState(null);
   const [liveMode, setLiveMode] = useState(true);
   const [atBottom, setAtBottom] = useState(true);
+  const [atTop, setAtTop] = useState();
+  const [isfetch, setFetch] = useState(false);
 
   const [newMessageCount, setNewMessageCount] = useState(0);
   const logsContainerRef = useRef(null);
   const element = logsContainerRef.current;
-  const handleRefresh = () => {
-    alert("0848484844848");
-  };
+  console.log(isfetch, "940394949494949");
+  console.log(atTop, atBottom, "084848484848");
+  console.log(logs, "0848dd48484848");
+  const arrayOfObjects = [
+    {
+      timestamp: 1712125058329,
+      message:
+        "Message 1: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
+    },
+    {
+      timestamp: 1712125058330,
+      message:
+        "Message 2: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
+    },
+    {
+      timestamp: 1712125058331,
+      message:
+        "Message 3: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
+    },
+    // Repeat the pattern for the remaining objects
+    {
+      timestamp: 1712125058377,
+      message:
+        "Message 50: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
+    },
+  ];
   const handleScrollDiv = () => {
     // setIsScroll(false);
     objDiv.scrollTop = element.scrollTop;
-    if (element.scrollTop + element.offsetHeight >= element.scrollHeight) {
+    if (element.scrollTop + element.offsetHeight >= element.scrollHeight - 50) {
       setAtBottom(true);
     } else {
       setAtBottom(false);
     }
+    if (objDiv) {
+      console.log(element.scrollTop, "84384934893");
+      objDiv.scrollTop = element.scrollTop;
+      if (element.scrollTop === 0) {
+        // If scrolled to the top
+        setAtTop(true);
+        setFetch(true);
+      } else {
+        setAtTop(false);
+      }
+    }
   };
+  console.log(atTop, logs, "082349208349");
+
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        setLoading(true);
+        // setLoading(true);
 
         const endTs = Date.now();
         const startTs = endTs - 24 * 60 * 60 * 1000;
-        const limit = 10;
-        let logsData = [];
-        if (!liveMode) {
-          logsData = await MimicLogs.fetchPreviousLogs({
+        const limit = 5;
+
+        if (atTop || !liveMode) {
+          // setFetch(true);
+          const res = await MimicLogs.fetchPreviousLogs({
             startTs,
             endTs,
             limit,
           });
-          setLiveMode(false);
+          setFetch(false);
+          setAtTop(false);
+          setLogs((prevLogs) => [...arrayOfObjects, ...prevLogs]);
         }
-
-        setLogs(logsData);
         setLoading(false);
 
         if (liveMode) {
           const unsubscribe = MimicLogs.subscribeToLiveLogs((newLog) => {
             setLogs((prevLogs) => [...prevLogs, newLog]);
-
             setNewMessageCount((prev) => prev + 1);
           });
 
           return unsubscribe;
         }
       } catch (error) {
-        console.error("Error fetching logs:", error);
-        setError(error.message || "Failed to fetch logs");
         setLoading(false);
+        setFetch(false);
+        setError(error.message || "Failed to fetch logs");
       }
     };
     fetchLogs();
-  }, [liveMode]);
+  }, [liveMode, atTop]);
 
   const handleScroll = () => {
-    console.log(
-      logsContainerRef.current.scrollTop,
-      logsContainerRef.current.scrollHeight,
-      "9340394304934"
-    );
     logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
   };
-  const objDiv = document.getElementById("terminal");
 
+  const fetchMoreData = () => {
+    alert("iamcalling");
+  };
+
+  const objDiv = document.getElementById("scrollableDiv");
+  console.log(liveMode, atBottom, objDiv, "9034903940");
   useEffect(() => {
     if (objDiv && liveMode && atBottom) {
       objDiv.scrollTop = objDiv.scrollHeight;
@@ -103,13 +141,37 @@ const Logs = () => {
       </div>
 
       <div className="bg-[#0E1623] text-[12px] font-fira-code h-full rounded-lg  flex flex-col gap-[11px] p-[20px] px-3 overflow-y-scroll">
+        {isfetch ? (
+          <div className="flex items-center justify-center bg-[#0E1623]">
+            <svg
+              aria-hidden="true"
+              className="w-4 h-4 text-gray-200 animate-spin fill-indigo-600"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <p className={`pl-3  text-[#82A0CE]`}>Loading previous 100 logs</p>
+          </div>
+        ) : (
+          ""
+        )}
         {!atBottom && liveMode && (
           <button
             type="button"
             onClick={handleScroll}
-            className="flex self-end justify-center items-center fixed bottom-1 mb-20 text-white bg-indigo-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-Indigo-700 dark:hover:bg-Indigo-700 focus:outline-none dark:focus:ring-blue-800"
+            className="flex self-end justify-center items-center fixed bottom-1 mb-14 text-white bg-indigo-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-Indigo-700 dark:hover:bg-Indigo-700 focus:outline-none dark:focus:ring-blue-800"
           >
-            {newMessageCount} New Logs
+            {newMessageCount}
+            <p className="mr-2 ml-2">New Logs</p>
             <svg
               width="9"
               height="13"
@@ -124,23 +186,24 @@ const Logs = () => {
             </svg>
           </button>
         )}
-
         <div
-          id="terminal"
+          id="scrollableDiv"
           ref={logsContainerRef}
           onScroll={handleScrollDiv}
-          className="bg-[#0E1623] text-[12px] font-fira-code  rounded-lg flex flex-col gap-[11px] p-[20px] px-3 overflow-y-scroll "
           style={{
-            height: "78vh",
-            scrollbarWidth: "none" /* Hide scrollbar in Firefox */,
+            height: 520,
+            overflow: "auto",
+            display: "flex",
+            flexDirection: liveMode ? "column" : "column",
+            scrollbarWidth: "none",
             WebkitScrollbar: {
               display: "none",
-            } /* Hide scrollbar in Webkit browsers */,
+            },
           }}
         >
-          <ul>
-            {logs && logs.map((log, index) => <Log log={log} key={index} />)}
-          </ul>
+          {/*Put the scroll bar always on the bottom*/}
+
+          {logs && logs.map((log, index) => <Log log={log} key={index} />)}
         </div>
       </div>
     </div>
