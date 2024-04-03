@@ -17,32 +17,7 @@ const Logs = () => {
   const [newMessageCount, setNewMessageCount] = useState(0);
   const logsContainerRef = useRef(null);
   const element = logsContainerRef.current;
-  console.log(isfetch, "940394949494949");
-  console.log(atTop, atBottom, "084848484848");
-  console.log(logs, "0848dd48484848");
-  const arrayOfObjects = [
-    {
-      timestamp: 1712125058329,
-      message:
-        "Message 1: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
-    },
-    {
-      timestamp: 1712125058330,
-      message:
-        "Message 2: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
-    },
-    {
-      timestamp: 1712125058331,
-      message:
-        "Message 3: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
-    },
-    // Repeat the pattern for the remaining objects
-    {
-      timestamp: 1712125058377,
-      message:
-        "Message 50: Morbi sem nulla, ligula quis tincidunt hendrerit, ipsum",
-    },
-  ];
+
   const handleScrollDiv = () => {
     // setIsScroll(false);
     objDiv.scrollTop = element.scrollTop;
@@ -52,7 +27,6 @@ const Logs = () => {
       setAtBottom(false);
     }
     if (objDiv) {
-      console.log(element.scrollTop, "84384934893");
       objDiv.scrollTop = element.scrollTop;
       if (element.scrollTop === 0) {
         // If scrolled to the top
@@ -63,7 +37,6 @@ const Logs = () => {
       }
     }
   };
-  console.log(atTop, logs, "082349208349");
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -83,7 +56,7 @@ const Logs = () => {
           });
           setFetch(false);
           setAtTop(false);
-          setLogs((prevLogs) => [...arrayOfObjects, ...prevLogs]);
+          setLogs((prevLogs) => [...res, ...prevLogs]);
         }
         setLoading(false);
 
