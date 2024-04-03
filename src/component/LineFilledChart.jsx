@@ -50,6 +50,8 @@ const LineFilledChart = ({ data }) => {
       pointBackgroundColor: colors[index % colors.length],
       tension: 0.2,
       pointStyle: false,
+      pointRadius: 0,
+
       borderWidth: 2,
       pointRadius: 0,
       fill: "start", // Gradient fill starting from bottom

@@ -1,18 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import Log from "../component/Log";
-import rightArrow from "../assets/arrow-right.svg";
 import { MimicLogs } from "../utils/api-mimic";
-import InfiniteScroll from "react-infinite-scroll-component";
+import DateRangePicker, {
+  convertToTimestamp,
+} from "../component/DateRangePicker";
+import { useSearchParams } from "react-router-dom";
 
 const Logs = () => {
   const [logs, setLogs] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [liveMode, setLiveMode] = useState(true);
+  const [liveMode, setLiveMode] = useState(false);
   const [atBottom, setAtBottom] = useState(true);
   const [atTop, setAtTop] = useState();
   const [isfetch, setFetch] = useState(false);
+  const [searchParams] = useSearchParams();
+  const from = searchParams.get("from");
+
+  useEffect(() => {
+    if (from) {
+      setLiveMode(!liveMode);
+    }
+  }, [from]);
+
+  const [datePicker, setDatePicker] = useState([
+    new Date(),
+    new Date(Date.now() - 2 * 60 * 1000),
+  ]);
 
   const [newMessageCount, setNewMessageCount] = useState(0);
   const logsContainerRef = useRef(null);
@@ -21,7 +35,7 @@ const Logs = () => {
   const handleScrollDiv = () => {
     // setIsScroll(false);
     objDiv.scrollTop = element.scrollTop;
-    if (element.scrollTop + element.offsetHeight >= element.scrollHeight - 50) {
+    if (element.scrollTop + element.offsetHeight >= element.scrollHeight - 10) {
       setAtBottom(true);
     } else {
       setAtBottom(false);
@@ -41,11 +55,10 @@ const Logs = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        // setLoading(true);
+        const endTs = convertToTimestamp(datePicker?.[1]);
 
-        const endTs = Date.now();
-        const startTs = endTs - 24 * 60 * 60 * 1000;
-        const limit = 5;
+        const startTs = convertToTimestamp(datePicker?.[0]);
+        const limit = 100;
 
         if (atTop || !liveMode) {
           // setFetch(true);
@@ -57,6 +70,7 @@ const Logs = () => {
           setFetch(false);
           setAtTop(false);
           setLogs((prevLogs) => [...res, ...prevLogs]);
+          if (objDiv) logsContainerRef.current.scrollTop = 800;
         }
         setLoading(false);
 
@@ -81,12 +95,7 @@ const Logs = () => {
     logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
   };
 
-  const fetchMoreData = () => {
-    alert("iamcalling");
-  };
-
   const objDiv = document.getElementById("scrollableDiv");
-
   useEffect(() => {
     if (objDiv && liveMode && atBottom) {
       objDiv.scrollTop = objDiv.scrollHeight;
@@ -105,11 +114,10 @@ const Logs = () => {
     <div className="h-[80vh] px-5">
       <div className=" mr-auto">
         <div className="flex justify-end w-full py-2 gap-1 font-work-sans text-[12px]">
-          <p>Showing logs for </p>
-
-          <p className=" ">09/08/2023 10:10</p>
-          <img src={rightArrow} className="h-[17] w-[11px]" alt="rightArrow" />
-          <p className=" ">09/08/2023 10:10</p>
+          <DateRangePicker
+            datePicker={datePicker}
+            setDatePicker={setDatePicker}
+          />
         </div>
       </div>
 
@@ -141,7 +149,7 @@ const Logs = () => {
           <button
             type="button"
             onClick={handleScroll}
-            className="flex self-end justify-center items-center fixed bottom-1 mb-14 text-white bg-indigo-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-Indigo-700 dark:hover:bg-Indigo-700 focus:outline-none dark:focus:ring-blue-800"
+            className="flex self-end justify-center items-center fixed bottom-1 mb-14 text-white bg-indigo-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5  dark:bg-Indigo-700 dark:hover:bg-Indigo-700 focus:outline-none dark:focus:ring-blue-800"
           >
             {newMessageCount}
             <p className="mr-2 ml-2">New Logs</p>
@@ -174,8 +182,6 @@ const Logs = () => {
             },
           }}
         >
-          {/*Put the scroll bar always on the bottom*/}
-
           {logs && logs.map((log, index) => <Log log={log} key={index} />)}
         </div>
       </div>
