@@ -4,29 +4,17 @@ import { MimicMetrics } from "../utils/api-mimic";
 
 import ChartWithCard from "../component/ChartWithCard";
 import DateRangePicker from "../component/DateRangePicker";
-import { useSearchParams } from "react-router-dom";
 
-const Metrics = ({
-  selectedValue,
-  setSelectedValue,
-  datePicker,
-  setDatePicker,
-}) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-
+const Metrics = () => {
   const [metricsData, setMetricsData] = useState([]);
   console.log("🚀 ~ Metrics ~ metricsData:", metricsData);
 
   useEffect(() => {
-    const from = searchParams.get("from");
-    const toValue = searchParams.get("to");
-    const to = toValue === "now" ? Date.now() : toValue;
-
     const fetchData = async () => {
       try {
         const data = await MimicMetrics.fetchMetrics({
-          startTs: from,
-          endTs: to,
+          startTs: Date.now() - 3600 * 1000, // Example start timestamp
+          endTs: Date.now(), // Example end timestamp
         });
         setMetricsData(data);
       } catch (error) {
@@ -35,20 +23,17 @@ const Metrics = ({
     };
 
     fetchData();
-  }, [searchParams]);
+  }, []);
   return (
     <>
       {/* Main Card */}
-      <div className="bg-[#FAFCFF] px-5 py-4 mt-[2px]">
+      <div className="bg-[#FAFCFF]  px-5 py-4 mt-[2px]">
         <div className="rounded-lg border-[1px] border-[#CEE0F8]  bg-white ">
           <div className="flex items-center  border-b-[1px] border-[#CEE0F8] px-5 py-4 ">
             <p className="text-[24px] font-bold">Metrics</p>
 
             <div className="flex  pl-2">
-              <DateRangePicker
-                datePicker={datePicker}
-                setDatePicker={setDatePicker}
-              />
+              <DateRangePicker />
             </div>
           </div>
 

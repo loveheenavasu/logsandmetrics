@@ -8,7 +8,7 @@ const Logs = () => {
   console.log("🚀 ~ Logs ~ logs:", logs);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [liveMode, setLiveMode] = useState(false);
+  const [liveMode, setLiveMode] = useState(true);
 
   useEffect(() => {
     const fetchLogs = async () => {

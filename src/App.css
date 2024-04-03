@@ -1,7 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Karla:ital,wght@0,200..800;1,200..800&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 
 body {
   font-family: "Karla", sans-serif;
 }
+
+/* styles.css */
+.react-chartjs-2 .legend li span {
+  width: 10px; /* Adjust width as needed */
+  height: 10px; /* Adjust height as needed */
+  border-radius: 0; /* Remove border radius */
+  display: inline-block;
+}
+
+/* .react-datetimerange-picker__wrapper {
+  border: none !important;
+}
+
+.react-datetimerange-picker__button {
+  display: none !important;
+}
+
+.react-datetimerange-picker {
+  font-family: "Work Sans";
+} */

@@ -6,8 +6,9 @@ import logsGray from "../assets/logs-gray.svg";
 import logsBlue from "../assets/logs-blue.svg";
 
 import logo from "../assets/Logo.svg";
+import Dropdown from "./Dropdown";
 
-const Navbar = () => {
+const Navbar = ({ selectedValue, setSelectedValue }) => {
   const location = useLocation();
 
   const navLinks = [
@@ -26,7 +27,7 @@ const Navbar = () => {
           <img src={logo} alt="logo" />
         </Link>
 
-        <div className=" w-full">
+        <div className="flex w-full justify-between items-center">
           <ul className="font-medium text-[16px] flex  p-4 gap-8">
             {navLinks.map((link, index) => (
               <li key={index}>
@@ -59,6 +60,10 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
+          <Dropdown
+            selectedValue={selectedValue}
+            setSelectedValue={setSelectedValue}
+          />
         </div>
       </div>
     </nav>
