@@ -83,7 +83,7 @@ const Dropdown = ({ selectedValue, setSelectedValue }) => {
   return (
     <div
       ref={dropdownRef}
-      className="relative inline-block text-left w-[148px]"
+      className="relative inline-block text-left w-[180px]"
     >
       <div>
         <button

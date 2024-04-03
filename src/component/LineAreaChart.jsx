@@ -42,6 +42,7 @@ const LineAreaChart = ({ data }) => {
       borderColor: colors[index % colors.length],
       tension: 0.1,
       pointStyle: false,
+      pointRadius: 0,
       borderWidth: 2,
     };
   });
