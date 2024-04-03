@@ -146,6 +146,7 @@ export class MimicMetrics {
         ),
       })),
     });
+
     const getProportionateMinMax = (min, max, newPeak) => [
       (min * newPeak) / 100,
       (max * newPeak) / 100,

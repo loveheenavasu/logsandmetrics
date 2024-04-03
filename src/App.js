@@ -4,14 +4,34 @@ import Metrics from "./pages/Metrics";
 import "./main.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Navbar from "./component/Navbar";
+import { useState } from "react";
 
 function App() {
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [datePicker, setDatePicker] = useState([
+    new Date(Date.now() - 2 * 60 * 1000),
+    new Date(),
+  ]);
+
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar />
+        <Navbar
+          selectedValue={selectedValue}
+          setSelectedValue={setSelectedValue}
+        />
         <Routes>
-          <Route path="/metrics" element={<Metrics />} />
+          <Route
+            path="/metrics"
+            element={
+              <Metrics
+                selectedValue={selectedValue}
+                setSelectedValue={setSelectedValue}
+                datePicker={datePicker}
+                setDatePicker={setDatePicker}
+              />
+            }
+          />
           <Route path="/logs" element={<Logs />} />
         </Routes>
       </BrowserRouter>

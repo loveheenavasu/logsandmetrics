@@ -1,16 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+const options = [
+  { name: "Last 5 minutes", value: "value1" },
+  { name: "Last 15 minutes", value: "value2" },
+  { name: "Last 30 minutes", value: "value3" },
+  { name: "Last 1 hour", value: "value4" },
+  { name: "Last 3 hours", value: "value5" },
+  { name: "Last 6 hours", value: "value6" },
+];
 
-const Dropdown = () => {
+const Dropdown = ({ selectedValue, setSelectedValue }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(null);
-  const options = [
-    "Last 5 minutes",
-    "Last 15 minutes",
-    "Last 30 minutes",
-    "Last 1 hour",
-    "Last 3 hours",
-    "Last 6 hours",
-  ];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramName = "value";
+
+  const paramValue = searchParams.get(paramName);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    // Update selectedValue based on query params
+    const initialValue = options.find(
+      (option) => option.value === searchParams.get(paramName)
+    );
+    setSelectedValue(initialValue || "");
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchParams, setSelectedValue]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -18,18 +42,56 @@ const Dropdown = () => {
 
   const handleSelect = (option) => {
     setSelectedValue(option);
-    setIsOpen(false); // Close the dropdown after selecting an option
+    setIsOpen(false);
+
+    const now = new Date(); // Get current date and time
+    let from; // Variable to store 'from' value
+
+    // Calculate 'from' value based on selected option
+    switch (option.value) {
+      case "value1":
+        from = Date.now() - 5 * 60 * 1000;
+        break;
+      case "value2":
+        from = Date.now() - 15 * 60 * 1000;
+        break;
+      case "value3":
+        from = Date.now() - 30 * 60 * 1000;
+        break;
+      case "value4":
+        from = Date.now() - 60 * 60 * 1000;
+        break;
+      case "value5":
+        from = Date.now() - 3 * 60 * 60 * 1000;
+        break;
+      case "value6":
+        from = Date.now() - 6 * 60 * 60 * 1000;
+        break;
+      default:
+        from = null;
+    }
+
+    const params = {
+      value: option.value,
+      from: from,
+      to: "now",
+    };
+
+    setSearchParams(params);
   };
 
   return (
-    <div className="relative inline-block text-left ">
+    <div
+      ref={dropdownRef}
+      className="relative inline-block text-left w-[148px]"
+    >
       <div>
         <button
           onClick={toggleDropdown}
           type="button"
           className="inline-flex justify-between w-full rounded-md border border-[#BBD2F1] bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
         >
-          {selectedValue ? selectedValue : "Select an option"}
+          {selectedValue ? selectedValue.name : "Select an option"}
 
           <svg
             className="-mr-1 ml-2 mt-1 h-3 w-3"
@@ -49,9 +111,9 @@ const Dropdown = () => {
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute z-10 mt-2  rounded-md bg-white shadow-lg w-[145px]">
+        <div className="absolute z-10 mt-2 rounded-md bg-white shadow-lg w-[145px]">
           <div
-            className="text-[14px]  divide-y divide-[#E0ECFD] px-2 py-3"
+            className="text-[14px] divide-y divide-[#E0ECFD] px-2 py-3"
             role="menu"
             aria-orientation="vertical"
             aria-labelledby="options-menu"
@@ -61,13 +123,12 @@ const Dropdown = () => {
                 key={index}
                 onClick={() => handleSelect(option)}
                 className={`
-                 
                    py-2 text-sm text-gray-700 w-full flex gap-1`}
                 role="menuitem"
                 tabIndex="0"
               >
-                {option}
-                {option === selectedValue && ( // Render a tick mark if the option is selected
+                {option.name}
+                {option === selectedValue && (
                   <svg
                     className="float-right mr-2  my-auto h-full"
                     width="8"

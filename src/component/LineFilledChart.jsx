@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend,
   TimeScale,
+  Filler,
 } from "chart.js";
 
 ChartJS.register(
@@ -22,33 +23,39 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  Filler
 );
 
-const LineAreaChart = ({ data }) => {
-  const colors = ["#DC2626", "#2563EB", "#059669"];
+const LineFilledChart = ({ data }) => {
+  const colors = ["#2563EB", "#DC2626", "#059669"];
   // Parse the API data into datasets for Chart.js
-  const reversedGraphLines = data.graphLines.slice().reverse();
 
-  const datasets = reversedGraphLines.map((line, index) => {
+  const datasets = data?.graphLines?.map((line, index) => {
+    const gradient = document
+      .createElement("canvas")
+      .getContext("2d")
+      .createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, `${colors[index % colors.length]}20`); // Start color with transparency
+    gradient.addColorStop(1, `${colors[index % colors.length]}00`); // End color with transparency
+
     return {
       label: line.name,
       data: line.values.map((value) => ({
         x: new Date(value.timestamp),
         y: value.value,
       })),
-
-      backgroundColor: colors[index % colors.length],
+      backgroundColor: gradient,
       borderColor: colors[index % colors.length],
-      tension: 0.1,
+      tension: 0.2,
       pointStyle: false,
       borderWidth: 2,
+      fill: "start", // Gradient fill starting from bottom
     };
   });
 
   const options = {
     responsive: true,
-
     scales: {
       x: {
         type: "time",
@@ -105,4 +112,4 @@ const LineAreaChart = ({ data }) => {
   );
 };
 
-export default LineAreaChart;
+export default LineFilledChart;
